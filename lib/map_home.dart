@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'map_types.dart';
 import 'map_settings.dart';
-import 'map_ui.dart';
+
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 
 class MapHome extends StatefulWidget {
@@ -92,13 +94,69 @@ class MapHomeState extends State<MapHome> {
   void _handleShowSettings() {
     Navigator.popAndPushNamed(context, '/settings');
   }
+
+  LatLng _currentLocation;
+
+  Marker _myPosition;
+  StreamSubscription<Map<String, double>> _locationSubscription;
+  GoogleMapController controller;
+  Location _location = new Location();
+  @override
+    void initState() {
+      super.initState();
+      _currentLocation = LatLng(34.0553, -118.2498);
+      _locationSubscription =
+        _location.onLocationChanged().listen((Map<String,double> result) {
+          var coord = LatLng(result['latitude'], result['longitude']);
+          print("**** cord $coord ****");
+          _updateSelectedMarker(_myPosition, MarkerOptions(
+            position: coord
+          ));
+          setState(() {
+            _currentLocation = coord;
+          });
+      });
+    }
+  void here() {
+    controller.moveCamera(CameraUpdate.newLatLng(_currentLocation));
+  }
+  void _updateSelectedMarker(Marker marker, MarkerOptions changes) {
+    marker != null ? controller.updateMarker(marker, changes) : null;
+  }
+  void _onMapCreated(GoogleMapController controller) {
+    this.controller = controller;
+    controller.addMarker(
+        MarkerOptions(
+          flat: true,
+          position: _currentLocation,
+          visible: true
+        )).then( (Marker m) {
+          _myPosition = m;
+        }
+    );
+    //controller.onMarkerTapped.add(_onMarkerTapped);
+  }
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+    _locationSubscription.cancel();
+  }
   @override
     Widget build(BuildContext context) {
       // TODO: implement build
       return Scaffold(
-        appBar: AppBar( title: Text('MyMap')),
-        body: MapUI(),
+        appBar: AppBar( title: Text('MyMap') ),
+        body: GoogleMap(
+          onMapCreated: _onMapCreated,
+          options: GoogleMapOptions(cameraPosition: CameraPosition(
+          target: GoogleMapOptions.defaultOptions.cameraPosition.target, zoom: 11.0)
+          ),    
+        ),
         drawer: _buildDrawer(context),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.my_location),
+          onPressed: here,
+        ),
       );
     }
 }
