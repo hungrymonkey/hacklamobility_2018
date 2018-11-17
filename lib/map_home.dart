@@ -16,7 +16,6 @@ class MapHome extends StatefulWidget {
 
 class MapHomeState extends State<MapHome> {
 
-
   void _handleCarChange(bool value) {
     sendUpdates(widget.configuration.copywith(car: value));
   }

@@ -25,43 +25,78 @@ class MapUIBody extends StatefulWidget {
 
 class MapUIBodyState extends State<MapUIBody> {
   Map<String, double> _startLocation;
-  Map<String, double> _currentLocation;
+  LatLng _currentLocation;
 
-
+  Marker _myPosition;
   StreamSubscription<Map<String, double>> _locationSubscription;
   GoogleMapController controller;
   Location _location = new Location();
   @override
     void initState() {
-      // TODO: implement initState
       super.initState();
+      _currentLocation = LatLng(34.0553, -118.2498);
       _locationSubscription =
         _location.onLocationChanged().listen((Map<String,double> result) {
+          var coord = LatLng(result['latitude'], result['longitude']);
+          print("**** cord $coord ****");
+          _updateSelectedMarker(_myPosition, MarkerOptions(
+            position: coord
+          ));
           setState(() {
-            _currentLocation = result;
+            _currentLocation = coord;
           });
       });
     }
-
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+    _locationSubscription.cancel();
+  }
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
+    controller.addMarker(
+        MarkerOptions(
+          position: _currentLocation,
+          visible: true
+        )).then( (Marker m) {
+          _myPosition = m;
+        }
+    );
     //controller.onMarkerTapped.add(_onMarkerTapped);
   }
 
+  void here() {
+    controller.moveCamera(CameraUpdate.newLatLng(_currentLocation));
+  }
+  void _updateSelectedMarker(Marker marker, MarkerOptions changes) {
+    marker != null ? controller.updateMarker(marker, changes) : null;
+  }
   
-
+  
   Widget build(BuildContext context){
-    Map<String, double> loc = _currentLocation;
+    var loc = _currentLocation;
+
     return Center(
-      child: GoogleMap(
-        onMapCreated: _onMapCreated,
-        options: GoogleMapOptions(
-          cameraPosition: CameraPosition(
-              target: LatLng(loc['latitude'], loc['longitude']),
-              zoom: 11.0,
+       child: Column(children: <Widget>[
+          SizedBox(
+            height: 400,
+            child: GoogleMap(
+              
+              onMapCreated: _onMapCreated,
+              options: GoogleMapOptions(cameraPosition: CameraPosition(
+                target: GoogleMapOptions.defaultOptions.cameraPosition.target, zoom: 11.0)
+              ),
+              
+            ),
           ),
-        )
-      ),
+          IconButton(
+            icon: Icon( Icons.my_location ),
+            onPressed: here,
+
+          ),
+       ],
+      )
+       
     );
   }
 }
