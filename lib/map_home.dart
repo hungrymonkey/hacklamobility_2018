@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'map_types.dart';
 import 'map_settings.dart';
+import 'map_ui.dart';
+
+
 class MapHome extends StatefulWidget {
   const MapHome( this.configuration, this.updater);
 
@@ -95,7 +98,7 @@ class MapHomeState extends State<MapHome> {
       // TODO: implement build
       return Scaffold(
         appBar: AppBar( title: Text('MyMap')),
-        body: Center(child: Text("Hello World"),),
+        body: MapUI(),
         drawer: _buildDrawer(context),
       );
     }
