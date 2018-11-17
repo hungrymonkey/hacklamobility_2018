@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 
-import './map_settings.dart';
+//import './map_settings.dart';
 import './map_types.dart';
 import './map_home.dart';
 
@@ -37,7 +37,7 @@ class MyAppState extends State<MyApp> {
       ),
       routes: <String, WidgetBuilder>{
         '/':          (BuildContext context) => MapHome(_configuration, configurationUpdater),
-        '/settings':  (BuildContext context) => MapSettings(_configuration, configurationUpdater)
+        //'/settings':  (BuildContext context) => MapSettings(_configuration, configurationUpdater)
       },
     );
   }
