@@ -3,7 +3,8 @@
 This project is an incomplete mix modal transporation map application.
 ## Description
 
-This project was created during HackLamobility.
+This project was created during Hack.LAMobility.
+
 https://www.daimler.com/company/strategy/digitallife/campus/hack-la-mobility.html
 
 ## Getting Started
